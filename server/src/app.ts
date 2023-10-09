@@ -9,7 +9,7 @@ const prompt = 'Anwser this with nothing but "Hello World!"'
 
 async function async() {
     await llm.query({"inputs": "The answer to the universe is"}).then((response) => {
-        console.log(JSON.stringify(response));
+        console.log(response[0].generated_text);
     })
     console.log(prompt)
 }

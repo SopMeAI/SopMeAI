@@ -30,13 +30,17 @@ export async function query(data: Request) {
     if (!API_TOKEN) return "Missing API TOKEN"
 
     const config = {
-        headers: { Authorization: `Bearer ${API_TOKEN}` }
+        headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${API_TOKEN}` 
+        }
     }
     const body = JSON.stringify(data)
     console.log(body)
 
-	await axios.post(ENDPOINT, body, config)
+	return await axios.post(ENDPOINT, body, config)
         .then((response) => {
+            console.log(response.data)
             return response.data
         })
         .catch((error) => {
