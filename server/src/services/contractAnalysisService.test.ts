@@ -1,95 +1,86 @@
-import { MockTextractClient } from '../mocks/MockTextractClient'
+import { simpleDocument, simpleOutput } from '../../test-data/textractTestResponses'
+import { MockTextractClient } from '../__mocks__/MockTextractClient'
+import { TextractDocument } from 'amazon-textract-response-parser'
 
 import {
-  getContractData,
-  analyzeDocument,
   getText,
+  createTextractDocument,
+  analyzeDocument,
+  getContractData,
   getCheckboxes,
-  contractDataToString,
+  getContractDataString,
 } from './contractAnalysisService'
 
 describe('Contract Analysis Service', () => {
-  const mockResponse = {
-    Blocks: [
-      { BlockType: 'LINE', Text: 'Sample text' },
-      { BlockType: 'LINE', Text: 'Option 1' },
-      { BlockType: 'LINE', Text: 'Option 2' },
-      { BlockType: 'SELECTION_ELEMENT', SelectionStatus: 'SELECTED', Text: 'Option 1' },
-      { BlockType: 'SELECTION_ELEMENT', SelectionStatus: 'NOT_SELECTED', Text: 'Option 2' },
-    ],
-    $metadata: {
-      httpStatusCode: 200,
-    },
-  }
-
-  it('should analyze the contract image and return blocks', async () => {
-    const mockTextractClient = new MockTextractClient(mockResponse)
-    const blocks = await analyzeDocument(Buffer.from('fakeImageData'), mockTextractClient)
-    expect(blocks).toEqual(mockResponse.Blocks)
+  it('should create a TextractDocument from a textract ouput', () => {
+    const document = createTextractDocument(simpleOutput)
+    expect(document).toBeDefined()
   })
 
-  it('should extract text from blocks', () => {
-    const blocks = [
-      { BlockType: 'LINE', Text: 'Sample text' },
-      { BlockType: 'LINE', Text: 'More text' },
+  it('should get text from a TextractDocument', () => {
+    const text = getText(simpleDocument)
+    const expectedText =
+      'Textract checkbox test\nThis checkbox has been checked\nThis checkbox has not been checked'
+    expect(text.trim()).toBe(expectedText.trim())
+  })
+
+  it('should get checkboxes from a TextractDocument', () => {
+    const checkboxes = getCheckboxes(simpleDocument)
+    const expectedCheckboxes = [
+      { isSelected: true, label: 'This checkbox has been checked' },
+      { isSelected: false, label: 'This checkbox has not been checked' },
     ]
-    const text = getText(blocks)
-    expect(text).toBe('Sample text\nMore text')
+    expect(checkboxes).toEqual(expectedCheckboxes)
   })
 
-  it('should extract checkboxes from blocks', () => {
-    const blocks = [
-      { BlockType: 'SELECTION_ELEMENT', SelectionStatus: 'SELECTED', Text: 'Option 1' },
-      { BlockType: 'SELECTION_ELEMENT', SelectionStatus: 'NOT_SELECTED', Text: 'Option 2' },
-    ]
-    const checkboxes = getCheckboxes(blocks)
-    expect(checkboxes).toEqual([
-      { isSelected: true, label: 'Option 1' },
-      { isSelected: false, label: 'Option 2' },
-    ])
+  it('should get a TextractDocument from a Buffer', async () => {
+    const mockClient = new MockTextractClient(simpleOutput)
+    const imageBuffer = Buffer.from('./test-data/simple/simple.png')
+    const document = await analyzeDocument(imageBuffer, mockClient)
+    const correctType = document instanceof TextractDocument
+    expect(correctType).toBe(true)
   })
 
-  it('should process contract image data and return text and checkboxes', async () => {
-    const textractClient = new MockTextractClient(mockResponse)
-    const imageData = Buffer.from('fakeImageData')
-    const result = await getContractData(imageData, textractClient)
-
-    expect(result).toEqual({
-      text: 'Sample text\nOption 1\nOption 2',
+  it('should get contract data from a Buffer', async () => {
+    const mockClient = new MockTextractClient(simpleOutput)
+    const imageBuffer = Buffer.from('./test-data/simple/simple.png')
+    const contractData = await getContractData(imageBuffer, mockClient)
+    const expectedData = {
+      text: 'Textract checkbox test\nThis checkbox has been checked\nThis checkbox has not been checked\n',
       checkboxes: [
-        { isSelected: true, label: 'Option 1' },
-        { isSelected: false, label: 'Option 2' },
-      ],
-    })
-  })
-
-  it('should convert contract data to a string', () => {
-    const contractData = {
-      text: 'Sample text\nOption 1\nOption 2',
-      checkboxes: [
-        { isSelected: true, label: 'Option 1' },
-        { isSelected: false, label: 'Option 2' },
+        { isSelected: true, label: 'This checkbox has been checked' },
+        { isSelected: false, label: 'This checkbox has not been checked' },
       ],
     }
+    expect(contractData).toEqual(expectedData)
+  })
 
-    const expectedText = `Text:
-Sample text
-Option 1
-Option 2
+  it('should return contract data as a string', () => {
+    const contractData = {
+      text: 'Textract checkbox test\nThis checkbox has been checked\nThis checkbox has not been checked\n',
+      checkboxes: [
+        { isSelected: true, label: 'This checkbox has been checked' },
+        { isSelected: false, label: 'This checkbox has not been checked' },
+      ],
+    }
+    const expectedString = `Text:
+Textract checkbox test
+This checkbox has been checked
+This checkbox has not been checked
 
 Checkboxes:
 [
   {
     "isSelected": true,
-    "label": "Option 1"
+    "label": "This checkbox has been checked"
   },
   {
     "isSelected": false,
-    "label": "Option 2"
+    "label": "This checkbox has not been checked"
   }
 ]`
+    const contractDataString = getContractDataString(contractData)
 
-    const result = contractDataToString(contractData)
-    expect(result).toBe(expectedText)
+    expect(contractDataString).toEqual(expectedString)
   })
 })

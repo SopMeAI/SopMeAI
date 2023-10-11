@@ -1,0 +1,3 @@
+Textract checkbox test
+This checkbox has been checked
+This checkbox has not been checked

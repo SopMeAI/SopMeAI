@@ -5,12 +5,16 @@ import type {
 } from '@aws-sdk/client-textract'
 
 export class MockTextractClient implements TextractClient {
-  private readonly response: AnalyzeDocumentCommandOutput
-  constructor(response: AnalyzeDocumentCommandOutput) {
+  private readonly response
+  constructor(response: any) {
     this.response = response
   }
   async send(_command: AnalyzeDocumentCommand): Promise<AnalyzeDocumentCommandOutput> {
-    return Promise.resolve(this.response)
+    const output = {
+      ...this.response,
+      $metadata: {},
+    }
+    return Promise.resolve(output)
   }
   config: any
   middlewareStack: any

@@ -1,5 +1,18 @@
-import { TextractClient, AnalyzeDocumentCommand, type Block } from '@aws-sdk/client-textract'
+import {
+  TextractClient,
+  AnalyzeDocumentCommand,
+  type AnalyzeDocumentCommandOutput,
+} from '@aws-sdk/client-textract'
+
+import {
+  type ApiAnalyzeDocumentResponse,
+  TextractDocument,
+  SelectionElement,
+} from 'amazon-textract-response-parser'
+
 import { env } from '../env'
+
+const MIN_CONFIDENCE = 30
 
 type ContractData = {
   text: string
@@ -25,60 +38,77 @@ export async function getContractData(
   imageBytes: Buffer,
   client: TextractClient = textractClient,
 ): Promise<ContractData> {
-  const blocks = await analyzeDocument(imageBytes, client)
-  const text = getText(blocks)
-  const checkboxes = getCheckboxes(blocks)
+  const document = await analyzeDocument(imageBytes, client)
+  const text = getText(document)
+  const checkboxes = getCheckboxes(document)
   return { text, checkboxes }
 }
 
 export async function analyzeDocument(
   imageBytes: Buffer,
   client: TextractClient = textractClient,
-): Promise<Block[]> {
-  const input = {
+): Promise<TextractDocument> {
+  const textractInput = {
     Document: {
       Bytes: imageBytes,
     },
     FeatureTypes: ['FORMS'],
   }
-  const analyzeCommand = new AnalyzeDocumentCommand(input)
+  const analyzeCommand = new AnalyzeDocumentCommand(textractInput)
   try {
     const response = await client.send(analyzeCommand)
-    return response.Blocks ?? []
+    const document = createTextractDocument(response)
+    return document
   } catch (error) {
     throw new Error(`Error analyzing document: ${error}`)
   }
 }
 
-export function getText(blocks: Block[]): string {
-  return blocks
-    .filter((block) => block.BlockType === 'LINE')
-    .map((block) => block.Text)
-    .join('\n')
+export function getText(document: TextractDocument): string {
+  let text = ''
+  for (const block of document.listBlocks()) {
+    if (block.BlockType === 'LINE') {
+      text += block.Text + '\n'
+    }
+  }
+
+  return text
 }
 
-export function getCheckboxes(blocks: Block[]): Checkbox[] {
-  const keyValueSets = blocks.filter((block) => block.BlockType === 'KEY_VALUE_SET')
-  for (const block of keyValueSets) {
-    console.log(block)
-    if (block.Relationships) {
-      for (const relationship of block.Relationships) {
-        console.log(relationship)
+export function getCheckboxes(document: TextractDocument): Checkbox[] {
+  const checkboxes = [] as Checkbox[]
+  for (const field of document.form.iterFields()) {
+    if (field.confidence < MIN_CONFIDENCE) {
+      continue
+    }
+    if (field?.value) {
+      for (const content of field.value.listContent()) {
+        if (content instanceof SelectionElement) {
+          const checkbox = {
+            isSelected: content.selectionStatus === 'SELECTED',
+            label: field.key.text,
+          }
+          checkboxes.push(checkbox)
+        }
       }
     }
-    console.log('---\n')
   }
-  return blocks
-    .filter((block) => block.BlockType === 'SELECTION_ELEMENT')
-    .map((block) => {
-      const isSelected = block.SelectionStatus === 'SELECTED'
-      const label = block.Text ?? ''
-      return { isSelected, label }
-    })
+  return checkboxes
 }
 
-export function contractDataToString(contractData: ContractData): string {
+export function getContractDataString(contractData: ContractData): string {
   const { text, checkboxes } = contractData
-  const textData = `Text:\n${text}\n\nCheckboxes:\n${JSON.stringify(checkboxes, null, 2)}`
+  const textData = `Text:\n${text}\nCheckboxes:\n${JSON.stringify(checkboxes, null, 2)}`
   return textData
+}
+
+export function createTextractDocument(output: AnalyzeDocumentCommandOutput): TextractDocument {
+  /*
+  The ApiResponsePage input interface exposed and expected by this module is subtly different from - 
+  but functionally compatible with - the output types produced by the AWS SDK for JavaScript Textract Client.
+  https://github.com/aws-samples/amazon-textract-response-parser/tree/master/src-js#loading-data
+  */
+  const apiAnalyzeDocumentResponse = output as unknown as ApiAnalyzeDocumentResponse
+  const document = new TextractDocument(apiAnalyzeDocumentResponse)
+  return document
 }
