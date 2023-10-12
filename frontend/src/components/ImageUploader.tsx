@@ -10,8 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 
+import sendImageToApi from "@/services/apiService";
 const ImageUploader = () => {
+  const { toast } = useToast();
   const [image, setImage] = useState<File | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,8 +23,22 @@ const ImageUploader = () => {
     }
   };
 
+  const handleDeployClick = async () => {
+    if (image) {
+      try {
+        await sendImageToApi(image, "API url");
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Something went wrong",
+        });
+      }
+    }
+  };
+
   return (
-    <div>
+    <div className="w-full ">
       <Card>
         <CardHeader>
           <CardTitle>Insert Image</CardTitle>
@@ -36,7 +53,7 @@ const ImageUploader = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline">Cancel</Button>
-          <Button>Deploy</Button>
+          <Button onClick={handleDeployClick}>Deploy</Button>
         </CardFooter>
       </Card>
     </div>

@@ -1,9 +1,15 @@
 import "./App.css";
+import { Toaster } from "@/components/ui/toaster";
 import ImageUploader from "@/components/ImageUploader";
+import QuestionInput from "./components/QuestionInput";
 function App() {
   return (
-    <div className="grid place-items-center h-screen">
-      <ImageUploader />
+    <div className="flex flex-col items-center justify-between h-screen">
+      <div>
+        <ImageUploader />
+      </div>
+      <QuestionInput />
+      <Toaster />
     </div>
   );
 }
