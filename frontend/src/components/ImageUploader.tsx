@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { GPT_API_URL } from "@/config/config";
 
 import sendImageToApi from "@/services/apiService";
 const ImageUploader = () => {
@@ -26,7 +27,7 @@ const ImageUploader = () => {
   const handleDeployClick = async () => {
     if (image) {
       try {
-        await sendImageToApi(image, "API url");
+        await sendImageToApi(image, GPT_API_URL);
       } catch (error) {
         toast({
           variant: "destructive",
