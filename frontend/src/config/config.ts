@@ -1,1 +1,1 @@
-export const GPT_API_URL = process.env.REACT_APP_GPT_API_URL || "http://localhost:3000/api/gpt";
+export const GPT_API_URL = import.meta.env.REACT_APP_GPT_API_URL || "http://localhost:3000/api/gpt";
