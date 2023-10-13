@@ -1,0 +1,3 @@
+'Page number,'Key,'Value,'Confidence Score % (Key),'Confidence Score % (Value)
+"'1","'This checkbox has been checked","'SELECTED","'74.27606201","'99.55478668"
+"'1","'This checkbox has not been checked","'NOT_SELECTED","'68.82993317","'99.74535370"
