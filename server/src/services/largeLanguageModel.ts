@@ -2,7 +2,7 @@ import { HfInference } from '@huggingface/inference'
 import OpenAI from "openai"
 require('dotenv').config()
 
-// interfaces
+// interfaces for huggingface query, may be deleted if huggingface integration is removed
 interface Parameters {
     min_length?: number, // integer
     max_length?: number, // integer
@@ -25,6 +25,7 @@ interface Request {
 
 
 // functions
+// Makes a request to Huggingface Inference API
 export async function query(request: Request) {
 
     // Connection requirements
@@ -56,9 +57,12 @@ export async function query(request: Request) {
     })
 }
 
+// Makes a request to OpenAI's API
 export async function gptquery(prompt: string) {
     const API_TOKEN = process.env.OPENAI_API_TOKEN
     const MODEL = 'gpt-3.5-turbo'
+
+    if (!API_TOKEN) return "Missing API TOKEN"
 
     const openai = new OpenAI({
         apiKey: API_TOKEN,

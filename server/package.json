@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@huggingface/inference": "^2.6.4",
-    "openai": "^4.12.1"
+    "openai": "^4.12.1",
     "@aws-sdk/client-textract": "^3.427.0",
     "amazon-textract-response-parser": "^0.3.1",
     "dotenv": "^16.3.1",
