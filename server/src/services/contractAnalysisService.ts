@@ -5,6 +5,11 @@ import {
 } from '@aws-sdk/client-textract'
 
 import {
+  ApiBlockType,
+  ApiSelectionStatus,
+} from 'amazon-textract-response-parser/dist/types/api-models'
+
+import {
   type ApiAnalyzeDocumentResponse,
   TextractDocument,
   SelectionElement,
@@ -67,7 +72,7 @@ export async function analyzeDocument(
 export function getText(document: TextractDocument): string {
   let text = ''
   for (const block of document.listBlocks()) {
-    if (block.BlockType === 'LINE') {
+    if (block.BlockType === ApiBlockType.Line) {
       text += block.Text + '\n'
     }
   }
@@ -85,7 +90,7 @@ export function getCheckboxes(document: TextractDocument): Checkbox[] {
       for (const content of field.value.listContent()) {
         if (content instanceof SelectionElement) {
           const checkbox = {
-            isSelected: content.selectionStatus === 'SELECTED',
+            isSelected: content.selectionStatus === ApiSelectionStatus.Selected,
             label: field.key.text,
           }
           checkboxes.push(checkbox)
