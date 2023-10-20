@@ -17,6 +17,10 @@ function create(body:OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming
   return new Promise<any>(promise)
 }
 
+// Please note that only the create function is actually mocked. Calling other functions still retain original functionality.
+// However, it is not possible to make paid API calls with this, as the API-key is not real.
+// Regardless, please avoid using functions that do not have a mock.
+
 const MockOpenAI:OpenAI = new OpenAI({ apiKey: 'mock apiKey' })
 MockOpenAI.chat.completions.create = <any> create
 
