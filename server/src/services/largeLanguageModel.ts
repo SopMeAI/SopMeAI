@@ -58,13 +58,13 @@ export async function query(request: Request) {
 }
 
 // Makes a request to OpenAI's API
-export async function gptquery(prompt: string) {
+export async function gptquery(prompt: string, oai?: OpenAI) {
     const API_TOKEN = process.env.OPENAI_API_TOKEN
     const MODEL = 'gpt-3.5-turbo'
 
     if (!API_TOKEN) return "Missing API TOKEN"
 
-    const openai = new OpenAI({
+    const openai = (oai)? oai : new OpenAI({
         apiKey: API_TOKEN,
     })
 
@@ -72,6 +72,7 @@ export async function gptquery(prompt: string) {
         model: MODEL,
         messages: [{ role: 'user', content: prompt }],
     }).then((response:any) => {
+        console.log(response)
         return response.choices[0].message.content
     })
 
