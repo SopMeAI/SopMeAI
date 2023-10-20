@@ -1,5 +1,4 @@
 import OpenAI from 'openai'
-//const oai: OpenAI = jest.createMockFromModule('openai')
 
 function create(body:OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming | OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming)
 {
@@ -17,7 +16,6 @@ function create(body:OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming
 
   return new Promise<any>(promise)
 }
-
 
 const MockOpenAI:OpenAI = new OpenAI({ apiKey: 'mock apiKey' })
 MockOpenAI.chat.completions.create = <any> create
