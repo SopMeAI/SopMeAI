@@ -8,6 +8,7 @@ const env = cleanEnv(process.env, {
   AWS_REGION: str({ devDefault: testOnly('') }),
   AWS_ACCESS_KEY_ID: str({ devDefault: testOnly('') }),
   AWS_SECRET_ACCESS_KEY: str({ devDefault: testOnly('') }),
+  OPENAI_API_TOKEN: str({ devDefault: testOnly('') })
 })
 
 export { env }
