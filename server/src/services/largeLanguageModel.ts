@@ -1,4 +1,6 @@
 import OpenAI from "openai"
+import {ChatCompletion} from 'openai/resources'
+
 import { env } from '../env'
 
 // Connection Requirements
@@ -16,7 +18,7 @@ export async function sendGPTQuery(prompt: string, client: OpenAI = defaultClien
     const response = await client.chat.completions.create({
         model: MODEL,
         messages: [{ role: 'user', content: prompt }],
-    }).then((response:any) => {
+    }).then((response:ChatCompletion) => {
         return response
     })
 

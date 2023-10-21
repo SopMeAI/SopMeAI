@@ -1,9 +1,10 @@
 import OpenAI from 'openai'
+import {ChatCompletionCreateParamsStreaming, ChatCompletionCreateParamsNonStreaming, ChatCompletion} from 'openai/resources'
 
-function create(body:OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming | OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming)
+function create(body:ChatCompletionCreateParamsStreaming | ChatCompletionCreateParamsNonStreaming)
 {
   console.log(`Openai create called with ${JSON.stringify(body)}`)
-  const mockResponse:OpenAI.Chat.ChatCompletion = {
+  const mockResponse:ChatCompletion = {
     id: '0',
     choices: [{ finish_reason:'stop', index: 0, message: {content: 'This is a mocked message.', role: 'system'}}],
     created: 0,
