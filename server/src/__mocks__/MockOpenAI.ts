@@ -1,17 +1,28 @@
 import OpenAI from 'openai'
-import {ChatCompletionCreateParamsStreaming, ChatCompletionCreateParamsNonStreaming, ChatCompletion} from 'openai/resources'
+import {
+  ChatCompletionCreateParamsStreaming,
+  ChatCompletionCreateParamsNonStreaming,
+  ChatCompletion,
+} from 'openai/resources'
 
-function create(body:ChatCompletionCreateParamsStreaming | ChatCompletionCreateParamsNonStreaming)
-{
+function create(
+  body: ChatCompletionCreateParamsStreaming | ChatCompletionCreateParamsNonStreaming,
+) {
   console.log(`Openai create called with ${JSON.stringify(body)}`)
-  const mockResponse:ChatCompletion = {
+  const mockResponse: ChatCompletion = {
     id: '0',
-    choices: [{ finish_reason:'stop', index: 0, message: {content: 'This is a mocked message.', role: 'system'}}],
+    choices: [
+      {
+        finish_reason: 'stop',
+        index: 0,
+        message: { content: 'This is a mocked message.', role: 'system' },
+      },
+    ],
     created: 0,
     model: 'Mock',
-    object: ''
+    object: '',
   }
-  const promise = (resolve:any) => {
+  const promise = (resolve: any) => {
     resolve(mockResponse)
   }
 
@@ -22,7 +33,7 @@ function create(body:ChatCompletionCreateParamsStreaming | ChatCompletionCreateP
 // However, it is not possible to make paid API calls with this, as the API-key is not real.
 // Regardless, please avoid using functions that do not have a mocked version.
 
-const MockOpenAI:OpenAI = new OpenAI({ apiKey: 'mock apiKey' })
-MockOpenAI.chat.completions.create = <any> create
+const MockOpenAI: OpenAI = new OpenAI({ apiKey: 'mock apiKey' })
+MockOpenAI.chat.completions.create = <any>create
 
 export default MockOpenAI

@@ -1,7 +1,6 @@
+import { TextractDocument } from 'amazon-textract-response-parser'
 import { simpleDocument, simpleOutput } from '../../test-data/textractTestResponses'
 import { MockTextractClient } from '../__mocks__/MockTextractClient'
-import { TextractDocument } from 'amazon-textract-response-parser'
-
 import {
   getText,
   createTextractDocument,
