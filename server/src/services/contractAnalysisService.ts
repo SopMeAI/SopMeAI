@@ -15,6 +15,7 @@ import {
   SelectionElement,
 } from 'amazon-textract-response-parser'
 
+import joinImages from 'join-images'
 import { env } from '../env'
 
 const MIN_CONFIDENCE = 30
@@ -40,13 +41,20 @@ const config = {
 const textractClient = new TextractClient(config)
 
 export async function getContractData(
-  imageBytes: Buffer,
+  imageBuffers: Buffer[],
   client: TextractClient = textractClient,
 ): Promise<ContractData> {
-  const document = await analyzeDocument(imageBytes, client)
+  const imageBuffer = await combineImagesVertically(imageBuffers)
+  const document = await analyzeDocument(imageBuffer, client)
   const text = getText(document)
   const checkboxes = getCheckboxes(document)
   return { text, checkboxes }
+}
+
+async function combineImagesVertically(imageBuffers: Buffer[]) {
+  const combinedImage = await joinImages(imageBuffers, { direction: 'vertical' })
+  const combinedBuffer = await combinedImage.png().toBuffer()
+  return combinedBuffer
 }
 
 export async function analyzeDocument(
@@ -99,12 +107,6 @@ export function getCheckboxes(document: TextractDocument): Checkbox[] {
     }
   }
   return checkboxes
-}
-
-export function getContractDataString(contractData: ContractData): string {
-  const { text, checkboxes } = contractData
-  const textData = `Text:\n${text}\nCheckboxes:\n${JSON.stringify(checkboxes, null, 2)}`
-  return textData
 }
 
 export function createTextractDocument(output: AnalyzeDocumentCommandOutput): TextractDocument {
