@@ -1,6 +1,7 @@
 import {
   TextractClient,
   AnalyzeDocumentCommand,
+  FeatureType,
   type AnalyzeDocumentCommandOutput,
 } from '@aws-sdk/client-textract'
 import {
@@ -64,7 +65,7 @@ export async function analyzeDocument(
     Document: {
       Bytes: imageBytes,
     },
-    FeatureTypes: ['FORMS'],
+    FeatureTypes: [FeatureType.FORMS],
   }
   const analyzeCommand = new AnalyzeDocumentCommand(textractInput)
   try {
