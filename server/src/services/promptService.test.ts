@@ -1,7 +1,7 @@
 import { generateContractPrompt } from './promptService'
 
 describe('generateContractPrompt', () => {
-  it('should generate a prompt with the correct prefix and data', () => {
+  it('should generate a prompt with the correct data', () => {
     const contractData = {
       text: 'This is some contract text Checkbox 1 Checkbox 2',
       checkboxes: [
