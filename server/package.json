@@ -10,7 +10,8 @@
     "start": "node build/index.js",
     "test": "jest",
     "watch": "jest --watch",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "createContractData": "ts-node-dev test-data/helpers/createContractData.ts"
   },
   "author": "",
   "license": "MIT",
