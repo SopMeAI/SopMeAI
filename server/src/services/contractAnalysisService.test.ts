@@ -1,7 +1,8 @@
-import { simpleDocument, simpleOutput } from '../../test-data/textractTestResponses'
-import { MockTextractClient } from '../__mocks__/MockTextractClient'
 import { TextractDocument } from 'amazon-textract-response-parser'
 
+import { simpleDocument, simpleOutput } from '../../test-data/helpers/textractTestResponses'
+
+import { MockTextractClient } from '../__mocks__/MockTextractClient'
 import {
   getText,
   createTextractDocument,
@@ -10,9 +11,9 @@ import {
   getCheckboxes,
 } from './contractAnalysisService'
 
-const SIMPLE_IMAGE_PATH = './test-data/simple/simple.png'
-import fs from 'fs'
+const SIMPLE_IMAGE_PATH = './test-data/simple/image.png'
 
+import fs from 'fs'
 
 describe('Contract Analysis Service', () => {
   it('should create a TextractDocument from a textract ouput', () => {
@@ -65,7 +66,7 @@ describe('Contract Analysis Service', () => {
     expect(contractData).toEqual(expectedData)
   })
 
-    it('should get contract data from multiple image Buffers', async () => {
+  it('should get contract data from multiple image Buffers', async () => {
     const mockClient = new MockTextractClient(simpleOutput)
     const simpleImage = fs.readFileSync(SIMPLE_IMAGE_PATH)
     const imageBuffers = [simpleImage, simpleImage]

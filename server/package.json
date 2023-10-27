@@ -9,7 +9,9 @@
     "lint": "eslint . --ext .ts",
     "start": "node build/index.js",
     "test": "jest",
-    "watch": "jest --watch"
+    "watch": "jest --watch",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "createContractData": "ts-node-dev test-data/helpers/createContractData.ts"
   },
   "author": "",
   "license": "MIT",
@@ -20,7 +22,9 @@
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "eslint": "^8.50.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "jest": "^29.7.0",
+    "prettier": "^3.0.3",
     "ts-jest": "^29.1.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.2.2"
