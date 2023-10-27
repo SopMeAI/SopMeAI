@@ -3,18 +3,15 @@ import {
   AnalyzeDocumentCommand,
   type AnalyzeDocumentCommandOutput,
 } from '@aws-sdk/client-textract'
-
-import {
-  ApiBlockType,
-  ApiSelectionStatus,
-} from 'amazon-textract-response-parser/dist/types/api-models'
-
 import {
   type ApiAnalyzeDocumentResponse,
   TextractDocument,
   SelectionElement,
 } from 'amazon-textract-response-parser'
-
+import {
+  ApiBlockType,
+  ApiSelectionStatus,
+} from 'amazon-textract-response-parser/dist/types/api-models'
 import { env } from '../env'
 
 const MIN_CONFIDENCE = 30
