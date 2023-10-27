@@ -44,6 +44,9 @@ export async function getContractData(
   imageBuffers: Buffer[],
   client: TextractClient = textractClient,
 ): Promise<ContractData> {
+  if (imageBuffers.length < 1) {
+    throw new Error('No images provided to getContractData')
+  }
   const imageBuffer = await combineImagesVertically(imageBuffers)
   const document = await analyzeDocument(imageBuffer, client)
   const text = getText(document)
