@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -43,11 +42,8 @@ const QuestionInput = () => {
               <FormItem>
                 <FormLabel>Question related to your Contract</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input placeholder="Enter question related to your contract" {...field} />
                 </FormControl>
-                <FormDescription>
-                  Ask question related to your contract
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
