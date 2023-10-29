@@ -11,23 +11,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { GPT_API_URL } from "@/config/config";
+import { sendImageToApi } from "@/services/apiService";
 
-import sendImageToApi from "@/services/apiService";
+import { AWS_TEXTRACT_API_URL } from "@/config/config";
+
 const ImageUploader = () => {
   const { toast } = useToast();
-  const [image, setImage] = useState<File | null>(null);
+  const [images, setImages] = useState<File[]>([]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      setImages((prevImages) => [...prevImages, ...selectedFiles]);
     }
   };
 
+  const resetImageList = () => {
+    setImages([]);
+  };
   const handleDeployClick = async () => {
-    if (image) {
+    if (images) {
       try {
-        await sendImageToApi(image, GPT_API_URL);
+        await sendImageToApi(images, AWS_TEXTRACT_API_URL);
       } catch (error) {
         toast({
           variant: "destructive",
@@ -39,22 +44,56 @@ const ImageUploader = () => {
   };
 
   return (
-    <div className="w-full ">
+    <div className="w-full max-w-4xl mx-auto p-4">
       <Card>
         <CardHeader>
           <CardTitle>Insert Image</CardTitle>
           <CardDescription>Insert Image or Take A Photo</CardDescription>
         </CardHeader>
         <CardContent>
-          <Label htmlFor="picture">Picture</Label>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          {image && (
-            <img src={URL.createObjectURL(image)} alt="Uploaded Image" />
-          )}
+          <Label
+            htmlFor="picture"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Image
+          </Label>
+          <input
+            id="picture"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="mt-1 block w-full text-sm text-gray-500
+                   file:mr-4 file:py-2 file:px-4
+                   file:border-0 file:text-sm file:font-semibold
+                   file:bg-violet-50 file:text-violet-700
+                   hover:file:bg-violet-100"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {images.map((image, index) => (
+              <div key={index} className="w-60 h-60 relative">
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt={`Uploaded Image ${index + 1}`}
+                  className="object-cover w-full h-full rounded-lg shadow-sm"
+                />
+              </div>
+            ))}
+          </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="outline">Cancel</Button>
-          <Button onClick={handleDeployClick}>Deploy</Button>
+        <CardFooter className="flex justify-between mt-4">
+          <Button
+            variant="outline"
+            className="bg-transparent hover:bg-gray-100 text-gray-700 border-gray-300"
+            onClick={resetImageList}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={handleDeployClick}
+          >
+            Deploy
+          </Button>
         </CardFooter>
       </Card>
     </div>

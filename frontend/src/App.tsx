@@ -4,11 +4,13 @@ import ImageUploader from "@/components/ImageUploader";
 import QuestionInput from "./components/QuestionInput";
 function App() {
   return (
-    <div className="flex flex-col items-center justify-between h-screen">
-      <div>
+    <div className="flex flex-col justify-center items-center h-screen p-4">
+      <div className="w-full max-w-4xl mb-8">
         <ImageUploader />
       </div>
-      <QuestionInput />
+      <div className="w-full max-w-xl">
+        <QuestionInput />
+      </div>
       <Toaster />
     </div>
   );
