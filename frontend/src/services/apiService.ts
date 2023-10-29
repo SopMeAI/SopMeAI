@@ -1,7 +1,10 @@
-async function sendImageToApi(image: File, apiUrl: string): Promise<Response> {
+export async function sendImageToApi(images: File[], apiUrl: string): Promise<Response> {
     const formData = new FormData();
-    formData.append('image', image);
 
+    images.forEach((image) => {
+        formData.append('images', image);
+    }
+    )
     const response = await fetch(apiUrl, {
         method: 'POST',
         body: formData,
@@ -10,4 +13,14 @@ async function sendImageToApi(image: File, apiUrl: string): Promise<Response> {
     return response;
 }
 
-export default sendImageToApi
+export async function SendPromptToGpt(prompt: string, apiUrl: string): Promise<Response> {
+    const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+    });
+
+    return response;
+}
