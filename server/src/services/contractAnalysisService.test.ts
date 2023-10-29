@@ -80,4 +80,10 @@ describe('Contract Analysis Service', () => {
     }
     expect(contractData).toEqual(expectedData)
   })
+
+  it('should throw an error if no images are provided', async () => {
+    const mockClient = new MockTextractClient(simpleOutput)
+    const imageBuffers: Buffer[] = []
+    await expect(getContractData(imageBuffers, mockClient)).rejects.toThrow()
+  })
 })

@@ -25,5 +25,5 @@ module.exports = {
     rootDir: __dirname,
     project: 'tsconfig.json',
   },
-  ignorePatterns: ['node_modules', 'build', '.eslintrc.cjs', 'tsconfig.json', 'test-data', '__mocks__'],
+  ignorePatterns: ['node_modules', 'build', '.eslintrc.cjs', 'tsconfig.json', '__mocks__'],
 };
