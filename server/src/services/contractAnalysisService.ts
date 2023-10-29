@@ -20,7 +20,7 @@ import { env } from '../env'
 
 const MIN_CONFIDENCE = 30
 
-type ContractData = {
+export type ContractData = {
   text: string
   checkboxes: Checkbox[]
 }

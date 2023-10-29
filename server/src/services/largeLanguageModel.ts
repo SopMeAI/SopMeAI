@@ -1,5 +1,4 @@
 import OpenAI from 'openai'
-import { ChatCompletion } from 'openai/resources'
 import { env } from '../env'
 
 // Connection Requirements
@@ -12,17 +11,17 @@ const defaultClient = new OpenAI({
 })
 
 // Makes a request to OpenAI's API
-export async function sendGPTQuery(prompt: string, client: OpenAI = defaultClient) {
-  const response = await client.chat.completions
-    .create({
-      model: MODEL,
-      messages: [{ role: 'user', content: prompt }],
-    })
-    .then((response: ChatCompletion) => {
-      return response
-    })
-
+export async function sendGPTQuery(
+  prompt: string,
+  client: OpenAI = defaultClient,
+): Promise<string> {
+  const response = await client.chat.completions.create({
+    model: MODEL,
+    messages: [{ role: 'user', content: prompt }],
+  })
+  if (!response.choices[0].message.content) {
+    throw new Error('No response from GPT-3')
+  }
   const completion = response.choices[0].message.content
-
   return completion
 }
