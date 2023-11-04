@@ -33,9 +33,6 @@ const ImageUploader = () => {
     if (images) {
       try {
         await sendImageToApi(images, AWS_TEXTRACT_API_URL);
-        toast({
-          title: "Message sent successfully",
-        });
       } catch (error) {
         toast({
           variant: "destructive",
@@ -64,7 +61,6 @@ const ImageUploader = () => {
             id="picture"
             type="file"
             accept="image/*"
-            encType="multipart/form-data"
             onChange={handleImageChange}
             className="mt-1 block w-full text-sm text-gray-500
                    file:mr-4 file:py-2 file:px-4
