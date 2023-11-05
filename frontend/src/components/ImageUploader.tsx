@@ -33,6 +33,9 @@ const ImageUploader = () => {
     if (images) {
       try {
         await sendImageToApi(images, AWS_TEXTRACT_API_URL);
+        toast({
+          title: "Message sent successfully",
+        });
       } catch (error) {
         toast({
           variant: "destructive",
