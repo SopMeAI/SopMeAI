@@ -9,10 +9,10 @@ const env = cleanEnv(process.env, {
     choices: ['development', 'test', 'production'],
     default: 'development',
   }),
-  AWS_REGION: str({ devDefault: testOnly('test') }),
-  AWS_ACCESS_KEY_ID: str({ devDefault: testOnly('test') }),
-  AWS_SECRET_ACCESS_KEY: str({ devDefault: testOnly('test') }),
-  OPENAI_API_TOKEN: str({ devDefault: testOnly('test') }),
+  AWS_REGION: str({ default: '', devDefault: testOnly('us-west-2') }),
+  AWS_ACCESS_KEY_ID: str({ default: '', devDefault: testOnly('us-west-2') }),
+  AWS_SECRET_ACCESS_KEY: str({ default: '', devDefault: testOnly('us-west-2') }),
+  OPENAI_API_TOKEN: str({ default: '', devDefault: testOnly('test') }),
 })
 
 export { env }

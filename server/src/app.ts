@@ -4,10 +4,15 @@ import multer from 'multer'
 import { getContractData } from './services/contractAnalysisService'
 import { generateContractPrompt } from './services/promptService'
 import { sendGPTQuery } from './services/largeLanguageModel'
+import { sseRouter } from './routes/sse'
+import questionRouter from './routes/questions'
 const upload = multer()
 const app = express()
 app.use(cors())
 app.use(express.json())
+
+app.use('/sse', sseRouter)
+app.use('/questions', questionRouter)
 
 app.post('/api/aws/textract', upload.array('images'), (request: Request, response) => {
   /* upload.array('images') -> 'images' name is derived from the formData key/value pair, 
