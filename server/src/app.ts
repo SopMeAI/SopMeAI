@@ -1,7 +1,9 @@
 import express, { type Request } from 'express'
 import cors from 'cors'
 import multer from 'multer'
-
+import { getContractData } from './services/contractAnalysisService'
+import { generateContractPrompt } from './services/promptService'
+import { sendGPTQuery } from './services/largeLanguageModel'
 const upload = multer()
 const app = express()
 app.use(cors())
@@ -15,7 +17,31 @@ app.post('/api/aws/textract', upload.array('images'), (request: Request, respons
      console.log('Uploaded image was', (request as any).files)
   */
   console.log('Uploaded image was', request.files)
-  response.send('file upload successful')
+  const images: Buffer[] = []
+  if (!Array.isArray(request.files) || request.files.length === 0) {
+    response.status(400).send('No images were uploaded')
+    return
+  }
+  for (const file of request.files) {
+    images.push(file.buffer)
+  }
+  getContractData(images)
+    .then((data) => {
+      console.log('Contract data was: ', data)
+      return generateContractPrompt(data)
+    })
+    .then((prompt) => {
+      console.log('Prompt created')
+      return sendGPTQuery(prompt)
+    })
+    .then((completion) => {
+      console.log('Completion was: ', completion)
+      response.send(completion)
+    })
+    .catch((err) => {
+      console.log('Error was: ', err)
+      response.status(500).send('Error extracting contract data')
+    })
 })
 
 export default app
