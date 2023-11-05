@@ -32,7 +32,14 @@ const ImageUploader = () => {
   const handleDeployClick = async () => {
     if (images) {
       try {
-        await sendImageToApi(images, AWS_TEXTRACT_API_URL);
+        const response = await sendImageToApi(images, AWS_TEXTRACT_API_URL)
+        const text = await response.text()
+        if (response.status !== 200) {
+          console.log(`${response.status} Failed to analyze the contract: ${text}`)
+          throw new Error(text)
+        }
+        // Display the result
+        console.log(`Contract analyzed successfully: ${text}`)
         toast({
           title: "Message sent successfully",
         });
