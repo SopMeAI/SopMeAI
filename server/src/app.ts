@@ -4,7 +4,7 @@ import multer from 'multer'
 import { getContractData } from './services/contractAnalysisService'
 import { generateContractPrompt } from './services/promptService'
 import { sendGPTQuery } from './services/largeLanguageModel'
-import { sseRouter } from './routes/sse'
+import { sendUpdates, sseRouter } from './routes/sse'
 import questionRouter from './routes/questions'
 const upload = multer()
 const app = express()
@@ -30,23 +30,16 @@ app.post('/api/aws/textract', upload.array('images'), (request: Request, respons
   for (const file of request.files) {
     images.push(file.buffer)
   }
-  getContractData(images)
-    .then((data) => {
-      console.log('Contract data was: ', data)
-      return generateContractPrompt(data)
-    })
-    .then((prompt) => {
-      console.log('Prompt created')
-      return sendGPTQuery(prompt)
-    })
-    .then((completion) => {
-      console.log('Completion was: ', completion)
-      response.send(completion)
-    })
-    .catch((err) => {
-      console.log('Error was: ', err)
-      response.status(500).send('Error extracting contract data')
-    })
+  try {
+    const data = await getContractData(images)
+    const prompt = generateContractPrompt(data)
+    const completion = sendGPTQuery(prompt)
+    sendUpdates(completion)
+    response.status(200).send('Processing... Check the stream for updates.')
+  } catch (err) {
+    console.error('Error was: ', err)
+    response.status(500).send('Error extracting contract data')
+  }
 })
 
 export default app

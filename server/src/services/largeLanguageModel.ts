@@ -1,6 +1,5 @@
 import OpenAI from 'openai'
 import { env } from '../env'
-
 // Connection Requirements
 const API_TOKEN = env.OPENAI_API_TOKEN
 const MODEL = 'gpt-3.5-turbo'
@@ -15,13 +14,14 @@ export async function sendGPTQuery(
   prompt: string,
   client: OpenAI = defaultClient,
 ): Promise<string> {
+  let fullText = ''
   const response = await client.chat.completions.create({
     model: MODEL,
     messages: [{ role: 'user', content: prompt }],
+    stream: true,
   })
-  if (!response.choices[0].message.content) {
-    throw new Error('No response from GPT-3')
+  for await (const chunk of response) {
+    fullText += chunk.choices[0].delta.content
   }
-  const completion = response.choices[0].message.content
-  return completion
+  return fullText
 }

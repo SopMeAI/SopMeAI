@@ -14,7 +14,7 @@ questionRouter.post(
       sendUpdates(completion)
       res.status(204).end()
     } catch (error) {
-      res.status(500).json({ error: error.message })
+      //res.status(500).json({ error: error.message })
     }
   }),
 )

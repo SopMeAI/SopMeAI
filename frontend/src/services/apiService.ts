@@ -17,7 +17,7 @@ export async function SendPromptToGpt(prompt: string, apiUrl: string): Promise<R
     const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/event-stream',
         },
         body: JSON.stringify({ prompt }),
     });
