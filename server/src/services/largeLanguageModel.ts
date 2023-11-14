@@ -1,4 +1,6 @@
 import OpenAI from 'openai'
+import { Stream } from 'openai/streaming'
+import { ChatCompletionChunk } from 'openai/resources'
 import { env } from '../env'
 // Connection Requirements
 const API_TOKEN = env.OPENAI_API_TOKEN
@@ -13,15 +15,11 @@ const defaultClient = new OpenAI({
 export async function sendGPTQuery(
   prompt: string,
   client: OpenAI = defaultClient,
-): Promise<string> {
-  let fullText = ''
-  const response = await client.chat.completions.create({
+): Promise<Stream<ChatCompletionChunk>> {
+  const response: Stream<ChatCompletionChunk> = await client.chat.completions.create({
     model: MODEL,
     messages: [{ role: 'user', content: prompt }],
     stream: true,
   })
-  for await (const chunk of response) {
-    fullText += chunk.choices[0].delta.content
-  }
-  return fullText
+  return response
 }
