@@ -15,7 +15,8 @@ import {
   ApiBlockType,
   ApiSelectionStatus,
 } from 'amazon-textract-response-parser/dist/types/api-models'
-
+import { MockTextractClient } from '../__mocks__/MockTextractClient'
+import { response } from '../../test-data/short-risto-heikkinen/analyzeDocResponse'
 import { env } from '../env'
 
 const MIN_CONFIDENCE = 30
@@ -30,15 +31,21 @@ type Checkbox = {
   label: string
 }
 
-const config = {
-  region: env.AWS_REGION,
-  credentials: {
-    accessKeyId: env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
-  },
-}
+let textractClient: TextractClient
 
-const textractClient = new TextractClient(config)
+if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+  textractClient = new MockTextractClient(response)
+} else {
+  const config = {
+    region: env.AWS_REGION,
+    credentials: {
+      accessKeyId: env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+    },
+  }
+
+  textractClient = new TextractClient(config)
+}
 
 export async function getContractData(
   imageBuffers: Buffer[],
