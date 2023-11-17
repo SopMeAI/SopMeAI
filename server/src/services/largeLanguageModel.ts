@@ -34,6 +34,5 @@ export async function sendGPTQueryWithHistory(
     messages: messageHistory,
     stream: true,
   })
-  console.log('history', messageHistory)
   return response
 }
