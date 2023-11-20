@@ -8,7 +8,7 @@ import { sendGPTQuery } from './services/largeLanguageModel'
 import { sendUpdates, sseRouter } from './routes/sse'
 import { ChatCompletionMessageParam } from 'openai/resources'
 import { runAsyncWrapper } from './utils/runAsyncWrapper'
-import { ensureDataDirectoryExists, writeHistoryToFile } from './utils/chatHistoryManager'
+
 export const messageHistory: ChatCompletionMessageParam[] = []
 const upload = multer()
 const app = express()
@@ -17,9 +17,6 @@ app.use(express.json())
 app.use('/sse', sseRouter)
 app.use('/questions', questionRouter)
 
-ensureDataDirectoryExists().catch((error) => {
-  console.error('Failed to ensure data directory exists:', error)
-})
 app.post(
   '/api/aws/textract',
   upload.array('images'),
@@ -44,13 +41,12 @@ app.post(
       const data = await getContractData(images)
       const prompt = generateContractPrompt(data)
       const stream = await sendGPTQuery(prompt)
-      console.log('jotain pielessä?')
+
       for await (const chunk of stream) {
         FullResponse += chunk.choices[0]?.delta?.content || ''
         sendUpdates(chunk.choices[0]?.delta?.content || '')
       }
       messageHistory.push({ content: FullResponse, role: 'assistant' })
-      await writeHistoryToFile('1', messageHistory)
 
       response.status(200).send('Processing... Check the stream for updates.')
     } catch (err) {

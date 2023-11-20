@@ -3,7 +3,7 @@ import { runAsyncWrapper } from '../utils/runAsyncWrapper'
 import { sendGPTQueryWithHistory } from '../services/largeLanguageModel'
 import { sendUpdates } from './sse'
 import { messageHistory } from '../app'
-import { writeHistoryToFile } from '../utils/chatHistoryManager'
+
 const questionRouter = Router()
 
 questionRouter.post(
@@ -23,7 +23,6 @@ questionRouter.post(
         messageHistory.push({ content: FullResponse, role: 'assistant' })
       }
 
-      await writeHistoryToFile('1', messageHistory)
       res.status(204).end()
     } catch (error) {
       //res.status(500).json({ error: error.message })

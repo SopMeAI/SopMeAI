@@ -14,7 +14,6 @@ export async function sendImageToApi(images: File[], apiUrl: string): Promise<Re
 }
 
 export async function SendPromptToGpt(prompt: string, apiUrl: string): Promise<Response> {
-    console.log('prrompt', prompt)
     const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
