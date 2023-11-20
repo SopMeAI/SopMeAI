@@ -1,6 +1,7 @@
 import OpenAI from 'openai'
+import { Stream } from 'openai/streaming'
+import { ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources'
 import { env } from '../env'
-
 // Connection Requirements
 const API_TOKEN = env.OPENAI_API_TOKEN
 const MODEL = 'gpt-3.5-turbo'
@@ -9,19 +10,29 @@ const MODEL = 'gpt-3.5-turbo'
 const defaultClient = new OpenAI({
   apiKey: API_TOKEN,
 })
-
 // Makes a request to OpenAI's API
 export async function sendGPTQuery(
   prompt: string,
   client: OpenAI = defaultClient,
-): Promise<string> {
-  const response = await client.chat.completions.create({
+): Promise<Stream<ChatCompletionChunk>> {
+  const response: Stream<ChatCompletionChunk> = await client.chat.completions.create({
     model: MODEL,
     messages: [{ role: 'user', content: prompt }],
+    stream: true,
   })
-  if (!response.choices[0].message.content) {
-    throw new Error('No response from GPT-3')
-  }
-  const completion = response.choices[0].message.content
-  return completion
+  return response
+}
+
+export async function sendGPTQueryWithHistory(
+  prompt: string,
+  messageHistory: ChatCompletionMessageParam[] = [],
+  client: OpenAI = defaultClient,
+): Promise<Stream<ChatCompletionChunk>> {
+  messageHistory.push({ content: prompt, role: 'user' })
+  const response: Stream<ChatCompletionChunk> = await client.chat.completions.create({
+    model: MODEL,
+    messages: messageHistory,
+    stream: true,
+  })
+  return response
 }

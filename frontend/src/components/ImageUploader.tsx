@@ -32,14 +32,16 @@ const ImageUploader = () => {
   const handleDeployClick = async () => {
     if (images) {
       try {
-        const response = await sendImageToApi(images, AWS_TEXTRACT_API_URL)
-        const text = await response.text()
+        const response = await sendImageToApi(images, AWS_TEXTRACT_API_URL);
+        const text = await response.text();
         if (response.status !== 200) {
-          console.log(`${response.status} Failed to analyze the contract: ${text}`)
-          throw new Error(text)
+          console.log(
+            `${response.status} Failed to analyze the contract: ${text}`
+          );
+          throw new Error(text);
         }
         // Display the result
-        console.log(`Contract analyzed successfully: ${text}`)
+        console.log(`Contract analyzed successfully: ${text}`);
         toast({
           title: "Message sent successfully",
         });
@@ -57,15 +59,15 @@ const ImageUploader = () => {
     <div className="w-full max-w-4xl mx-auto p-4">
       <Card>
         <CardHeader>
-          <CardTitle>Insert Image</CardTitle>
-          <CardDescription>Insert Image or Take A Photo</CardDescription>
+          <CardTitle>Insert document</CardTitle>
+          <CardDescription>Insert Document or Take A Photo</CardDescription>
         </CardHeader>
         <CardContent>
           <Label
             htmlFor="picture"
             className="block text-sm font-medium text-gray-700"
           >
-            Image
+            Document
           </Label>
           <input
             id="picture"
@@ -102,7 +104,7 @@ const ImageUploader = () => {
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleDeployClick}
           >
-            Deploy
+            Send
           </Button>
         </CardFooter>
       </Card>

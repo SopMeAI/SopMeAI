@@ -1,18 +1,17 @@
-import  {Card} from "@/components/ui/card";
-
 const IntroductionText = () => {
-    return(
-        <div>
-            <Card className="p-4"> 
-                Welcome to our revolutionary app that makes reading contracts a breeze! 
-                Have you ever felt overwhelmed or confused by the lengthy, complex language used in legal documents? 
-                Well, fret no more! Our app is here to simplify the process for you.
-                Say goodbye to spending hours going through contracts and struggling to understand the implications. 
-                With our user-friendly interface and the power of large language models, 
-                you can effortlessly scan, upload, and analyze your contracts in a matter of seconds.
-            </Card>
-        </div>
-    )
-}
+  return (
+    <section>
+      <h1 className="font-heading text-xl sm:text-3xl">
+        Effortlessly Navigate Contracts with Our App
+      </h1>
+      <p className="mt-4 text-sm sm:text-base">
+        Tackling contracts can be daunting. That's why our app offers a smart
+        solution to decipher the legalese. Simply scan and upload your
+        documents, and let our AI-powered tool break down the complexities into
+        easy-to-understand insights. It's contract reading, simplified.
+      </p>
+    </section>
+  );
+};
 
 export default IntroductionText;
