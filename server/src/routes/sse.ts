@@ -10,8 +10,6 @@ router.get('/', (req: Request, res: Response) => {
 
   const clientId = addClient(res)
 
-  res.write(`data: ${JSON.stringify({ message: 'Connection established' })}\n\n`)
-
   req.on('close', () => {
     removeClient(clientId)
   })

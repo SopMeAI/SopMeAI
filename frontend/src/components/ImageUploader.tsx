@@ -15,10 +15,14 @@ import { sendImageToApi } from "@/services/apiService";
 
 import { AWS_TEXTRACT_API_URL } from "@/config/config";
 
-const ImageUploader = () => {
+type ImageUploaderProps = {
+  onImageLoaded: () => void;
+};
+
+const ImageUploader = ({ onImageLoaded }: ImageUploaderProps) => {
   const { toast } = useToast();
   const [images, setImages] = useState<File[]>([]);
-
+  const [disabled, setDisabled] = useState(false);
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
@@ -32,6 +36,7 @@ const ImageUploader = () => {
   const handleDeployClick = async () => {
     if (images) {
       try {
+        setDisabled(true);
         const response = await sendImageToApi(images, AWS_TEXTRACT_API_URL);
         const text = await response.text();
         if (response.status !== 200) {
@@ -39,6 +44,11 @@ const ImageUploader = () => {
             `${response.status} Failed to analyze the contract: ${text}`
           );
           throw new Error(text);
+        }
+        console.log("text", response);
+        if (response.ok) {
+          onImageLoaded();
+          setDisabled(false);
         }
         // Display the result
         console.log(`Contract analyzed successfully: ${text}`);
@@ -101,9 +111,14 @@ const ImageUploader = () => {
             Cancel
           </Button>
           <Button
+            disabled={disabled}
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleDeployClick}
           >
+            <svg
+              className="animate-spin h-5 w-5 mr-3 ..."
+              viewBox="0 0 24 24"
+            ></svg>
             Send
           </Button>
         </CardFooter>
