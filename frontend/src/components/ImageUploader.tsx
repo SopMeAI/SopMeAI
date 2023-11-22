@@ -115,10 +115,6 @@ const ImageUploader = ({ onImageLoaded }: ImageUploaderProps) => {
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleDeployClick}
           >
-            <svg
-              className="animate-spin h-5 w-5 mr-3 ..."
-              viewBox="0 0 24 24"
-            ></svg>
             Send
           </Button>
         </CardFooter>
