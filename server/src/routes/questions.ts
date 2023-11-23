@@ -21,6 +21,7 @@ questionRouter.post(
 
       if (FullResponse !== '') {
         messageHistory.push({ content: FullResponse, role: 'assistant' })
+        res.json({ FullResponse: FullResponse })
       }
 
       res.status(204).end()

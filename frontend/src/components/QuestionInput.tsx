@@ -29,6 +29,8 @@ const QuestionInput = () => {
     },
   });
   const [messages, setMessages] = useState<string[]>([]);
+
+  const [fullConversation, setFullConversation] = useState<string[]>([]);
   const [disabled, setDisabled] = useState(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setDisabled(true);
@@ -40,6 +42,13 @@ const QuestionInput = () => {
       if (response.ok) {
         setDisabled(false);
       }
+      const responseData = await response.json();
+      const answer = responseData.FullResponse;
+      setFullConversation((prevConversation) => [
+        ...prevConversation,
+        values.question,
+        answer,
+      ]);
     } catch (error) {
       console.error(error);
     } finally {
@@ -57,6 +66,10 @@ const QuestionInput = () => {
       const data = JSON.parse(event.data);
 
       console.log("New update from GPT-3:", data);
+      setFullConversation((prevConversation) => [
+        ...prevConversation,
+        data.message,
+      ]);
       setMessages((prevMessages) => [...prevMessages, data.message]);
     };
     eventSource.onopen = function () {};
@@ -66,9 +79,10 @@ const QuestionInput = () => {
 
     return () => {
       eventSource.close();
+      console.log("saMMU");
     };
   }, []);
-  console.log("messages", messages);
+  console.log("messages", fullConversation);
   return (
     <div className="max-w-4xl mx-auto p-4 w-[1200px]">
       <Card className="">
@@ -76,7 +90,16 @@ const QuestionInput = () => {
           <CardTitle>
             <CardContent>
               <div className="test-area bg-white shadow rounded p-4 max-h-80 h-64 overflow-y-auto w-">
-                <p className="text-sm font-normal">{messages}</p>
+                {fullConversation.map((item, index) => (
+                  <p
+                    key={index}
+                    className={`text-sm font-normal text-left ${
+                      index % 2 === 0 ? "text-blue-500" : "text-green-500"
+                    }`}
+                  >
+                    {item}
+                  </p>
+                ))}
 
                 {disabled && (
                   <div className="loading">Waiting for response...</div>
