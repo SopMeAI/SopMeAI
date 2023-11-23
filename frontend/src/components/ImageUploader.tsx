@@ -23,6 +23,7 @@ const ImageUploader = ({ onImageLoaded }: ImageUploaderProps) => {
   const { toast } = useToast();
   const [images, setImages] = useState<File[]>([]);
   const [disabled, setDisabled] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
@@ -49,6 +50,7 @@ const ImageUploader = ({ onImageLoaded }: ImageUploaderProps) => {
         if (response.ok) {
           onImageLoaded();
           setDisabled(false);
+          setShowSuccess(true);
         }
         // Display the result
         console.log(`Contract analyzed successfully: ${text}`);
@@ -67,6 +69,31 @@ const ImageUploader = ({ onImageLoaded }: ImageUploaderProps) => {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
+      {showSuccess && (
+        <div
+          className="bg-teal-100 border-t-4 border-spacing-7 rounded-md mb-2 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md"
+          role="alert"
+        >
+          <div className="flex">
+            <div className="py-1">
+              <svg
+                className="fill-current h-6 w-6 text-teal-500 mr-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold">Image Upload was successfull</p>
+              <p className="text-sm">
+                You can ask questions related to your contract
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Insert document</CardTitle>
