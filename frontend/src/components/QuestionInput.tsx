@@ -28,12 +28,12 @@ const QuestionInput = () => {
       question: "",
     },
   });
-  const [messages, setMessages] = useState<string[]>([]);
 
   const [fullConversation, setFullConversation] = useState<string[]>([]);
   const [disabled, setDisabled] = useState(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setDisabled(true);
+    form.reset();
     try {
       const response = await SendPromptToGpt(values.question, GPT_API_URL);
       if (!response.ok) {
@@ -53,7 +53,6 @@ const QuestionInput = () => {
       console.error(error);
     } finally {
       setDisabled(false);
-      form.reset();
     }
   }
 
@@ -66,7 +65,6 @@ const QuestionInput = () => {
       const data = JSON.parse(event.data);
 
       console.log("New update from GPT-3:", data);
-      setMessages((prevMessages) => [...prevMessages, data.message]);
     };
     eventSource.onopen = function () {};
     eventSource.onerror = function (error) {
@@ -80,6 +78,7 @@ const QuestionInput = () => {
   console.log("messages", fullConversation);
   return (
     <div className="max-w-4xl mx-auto p-4 w-[1200px]">
+      <h1>Contract support chat</h1>
       <Card className="">
         <CardHeader>
           <CardTitle>
@@ -133,8 +132,8 @@ const QuestionInput = () => {
             control={form.control}
             name="question"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Question related to your Contract</FormLabel>
+              <FormItem className="mt-4">
+                <FormLabel> Ask Question related to your Contract</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Enter question related to your contract"
