@@ -1,11 +1,11 @@
 import questionRouter from './routes/questions'
-import express, { type Request } from 'express'
+import express, { type Request, type Response } from 'express'
 import cors from 'cors'
 import multer from 'multer'
 import { getContractData } from './services/contractAnalysisService'
 import { generateContractPrompt } from './services/promptService'
-import { sendGPTQuery } from './services/largeLanguageModel'
-import { sendUpdates, sseRouter } from './routes/sse'
+import { sendGPTQueryStream } from './services/largeLanguageModel'
+import { sseRouter } from './routes/sse'
 import { ChatCompletionMessageParam } from 'openai/resources'
 import { runAsyncWrapper } from './utils/runAsyncWrapper'
 
@@ -17,16 +17,23 @@ app.use(express.json())
 app.use('/sse', sseRouter)
 app.use('/questions', questionRouter)
 
+let sendUpdates: Response | undefined
+
+app.get('/api/aws/textract', (request: Request, response: Response) => {
+  response.setHeader('Content-Type', 'text/event-stream')
+  response.setHeader('Cache-Control', 'no-cache')
+  response.setHeader('Connection', 'keep-alive')
+
+  sendUpdates = response
+  request.on('close', () => {
+    sendUpdates = undefined
+  })
+})
+
 app.post(
   '/api/aws/textract',
   upload.array('images'),
-  runAsyncWrapper(async (request: Request, response) => {
-    /* upload.array('images') -> 'images' name is derived from the formData key/value pair, 
-     e.g formData.append('images', image).
-     Image(s) and other related data is found in the request.file header
-     e.g 
-     console.log('Uploaded image was', (request as any).files)
-  */
+  runAsyncWrapper(async (request: Request, response: Response) => {
     console.log('Uploaded image was', request.files)
     const images: Buffer[] = []
     if (!Array.isArray(request.files) || request.files.length === 0) {
@@ -40,11 +47,15 @@ app.post(
       let FullResponse = ''
       const data = await getContractData(images)
       const prompt = generateContractPrompt(data)
-      const stream = await sendGPTQuery(prompt)
+      const stream = await sendGPTQueryStream(prompt)
 
       for await (const chunk of stream) {
         FullResponse += chunk.choices[0]?.delta?.content || ''
-        sendUpdates(chunk.choices[0]?.delta?.content || '')
+        if (sendUpdates) {
+          sendUpdates.write(
+            `data: ${JSON.stringify({ message: chunk.choices[0]?.delta?.content || '' })}\n\n`,
+          )
+        }
       }
       messageHistory.push({ content: FullResponse, role: 'assistant' })
 

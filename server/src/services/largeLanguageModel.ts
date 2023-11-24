@@ -11,7 +11,7 @@ const defaultClient = new OpenAI({
   apiKey: API_TOKEN,
 })
 // Makes a request to OpenAI's API
-export async function sendGPTQuery(
+export async function sendGPTQueryStream(
   prompt: string,
   client: OpenAI = defaultClient,
 ): Promise<Stream<ChatCompletionChunk>> {
