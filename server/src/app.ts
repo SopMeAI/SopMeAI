@@ -5,7 +5,7 @@ import multer from 'multer'
 import { getContractData } from './services/contractAnalysisService'
 import { generateContractPrompt } from './services/promptService'
 import { sendGPTQuery } from './services/largeLanguageModel'
-import { sendUpdates, sseRouter } from './routes/sse'
+import { sseRouter } from './routes/sse'
 import { ChatCompletionMessageParam } from 'openai/resources'
 import { runAsyncWrapper } from './utils/runAsyncWrapper'
 
@@ -37,18 +37,17 @@ app.post(
       images.push(file.buffer)
     }
     try {
-      let FullResponse = ''
+      //let FullResponse = ''
       const data = await getContractData(images)
       const prompt = generateContractPrompt(data)
       const stream = await sendGPTQuery(prompt)
 
-      for await (const chunk of stream) {
-        FullResponse += chunk.choices[0]?.delta?.content || ''
-        sendUpdates(chunk.choices[0]?.delta?.content || '')
-      }
-      messageHistory.push({ content: FullResponse, role: 'assistant' })
+      console.log('stream', stream.choices[0]?.message)
+      const FullResponse = stream.choices[0]?.message
+      messageHistory.push({ content: FullResponse.content, role: 'assistant' })
+      //console.log('messagehistoy', messageHistory)
 
-      response.status(200).send('Processing... Check the stream for updates.')
+      response.status(200).send(FullResponse.content)
     } catch (err) {
       console.error('Error was: ', err)
       response.status(500).send('Error extracting contract data')
