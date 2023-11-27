@@ -1,6 +1,6 @@
 import OpenAI from 'openai'
 import { Stream } from 'openai/streaming'
-import { ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources'
+import { ChatCompletion, ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources'
 import { env } from '../env'
 // Connection Requirements
 const API_TOKEN = env.OPENAI_API_TOKEN
@@ -14,11 +14,10 @@ const defaultClient = new OpenAI({
 export async function sendGPTQuery(
   prompt: string,
   client: OpenAI = defaultClient,
-): Promise<Stream<ChatCompletionChunk>> {
-  const response: Stream<ChatCompletionChunk> = await client.chat.completions.create({
+): Promise<ChatCompletion> {
+  const response: ChatCompletion = await client.chat.completions.create({
     model: MODEL,
     messages: [{ role: 'user', content: prompt }],
-    stream: true,
   })
   return response
 }

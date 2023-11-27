@@ -7,6 +7,7 @@ export async function sendImageToApi(images: File[], apiUrl: string): Promise<Re
     )
     const response = await fetch(apiUrl, {
         method: 'POST',
+        mode: 'cors',
         body: formData,
     });
 
@@ -16,6 +17,7 @@ export async function sendImageToApi(images: File[], apiUrl: string): Promise<Re
 export async function SendPromptToGpt(prompt: string, apiUrl: string): Promise<Response> {
     const response = await fetch(apiUrl, {
         method: 'POST',
+        mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
         },
